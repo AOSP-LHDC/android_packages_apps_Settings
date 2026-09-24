@@ -251,6 +251,14 @@ public class BluetoothCodecListPreferenceController extends AbstractBluetoothPre
 
         mBluetoothA2dpConfigStore.setCodecType(selectedCodecType);
         mBluetoothA2dpConfigStore.setCodecPriority(BluetoothCodecConfig.CODEC_PRIORITY_HIGHEST);
+        final int codecTypeValue = selectedCodecConfig.getCodecType();
+        if (codecTypeValue == BluetoothCodecConfig.SOURCE_CODEC_TYPE_LHDCV3
+                || codecTypeValue == BluetoothCodecConfig.SOURCE_CODEC_TYPE_LHDCV5) {
+            mBluetoothA2dpConfigStore.setSampleRate(BluetoothCodecConfig.SAMPLE_RATE_NONE);
+            mBluetoothA2dpConfigStore.setBitsPerSample(BluetoothCodecConfig.BITS_PER_SAMPLE_NONE);
+            mBluetoothA2dpConfigStore.setChannelMode(BluetoothCodecConfig.CHANNEL_MODE_NONE);
+            return true;
+        }
         mBluetoothA2dpConfigStore.setSampleRate(
                 AbstractBluetoothDialogPreferenceController.getHighestSampleRate(
                         selectedCodecConfig));
