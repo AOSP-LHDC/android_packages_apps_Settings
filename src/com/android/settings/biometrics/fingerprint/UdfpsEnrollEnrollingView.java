@@ -21,6 +21,7 @@ import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.graphics.Insets;
 import android.graphics.Point;
 import android.graphics.Rect;
@@ -284,6 +285,16 @@ public class UdfpsEnrollEnrollingView extends GlifLayout {
         setOnHoverListener();
     }
 
+    @Override
+    public int getFooterBackgroundColor() {
+        return isUdfpsLocationLow() ? Color.TRANSPARENT : super.getFooterBackgroundColor();
+    }
+
+    @Override
+    public int getFooterBackgroundColorFromStyle() {
+        return isUdfpsLocationLow() ? Color.TRANSPARENT : super.getFooterBackgroundColorFromStyle();
+    }
+
     void setSecondaryButtonBackground(@ColorInt int color) {
         // Set the button background only when the button is not under udfps overlay to avoid UI
         // overlap.
@@ -305,15 +316,19 @@ public class UdfpsEnrollEnrollingView extends GlifLayout {
         });
     }
 
-    void adjustFooterButtonForLowUdfps() {
+    /** Whether the sensor sits low enough in portrait for the footer bar to overlap it. */
+    private boolean isUdfpsLocationLow() {
         if (mIsLandscape || mUdfpsEnrollView == null) {
-            return;
+            return false;
         }
-
         final UdfpsOverlayParams params = mUdfpsEnrollView.getOverlayParams();
-        if (params == null || params.getNaturalDisplayHeight() <= 0
-                || params.getSensorBounds().bottom
-                        <= params.getNaturalDisplayHeight() * LOW_UDFPS_THRESHOLD) {
+        return params != null && params.getNaturalDisplayHeight() > 0
+                && params.getSensorBounds().bottom
+                        > params.getNaturalDisplayHeight() * LOW_UDFPS_THRESHOLD;
+    }
+
+    void adjustFooterButtonForLowUdfps() {
+        if (!isUdfpsLocationLow()) {
             return;
         }
 
